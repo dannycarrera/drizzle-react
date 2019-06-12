@@ -7,7 +7,7 @@ module.exports = {
   devtool: 'eval-source-map',
   output: {
     filename: 'drizzle-react.js',
-    library: 'drizzle-react',
+    library: '@wundr/drizzle-react',
     libraryTarget: 'umd',
     path: path.resolve(__dirname, 'dist')
   },
