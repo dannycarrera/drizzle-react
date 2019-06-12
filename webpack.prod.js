@@ -29,7 +29,7 @@ module.exports = {
     })
   ],
   externals: [
-    'drizzle',
+    '@wundr/drizzle',
     'prop-types',
     'react',
     'redux'
