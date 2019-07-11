@@ -12,8 +12,7 @@ const Initializer = ({
     web3Status: drizzleState.web3.status
   }))
   if (drizzleState.drizzleStatusInitialized) return children
-  if (drizzleState.web3Status === 'initialized')
-    return loadingContractsAndAccounts
+  if (drizzleState.web3Status === 'initialized') { return loadingContractsAndAccounts }
   if (drizzleState.web3Status === 'failed') return error
   return loadingWeb3
 }

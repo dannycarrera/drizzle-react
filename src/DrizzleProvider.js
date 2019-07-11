@@ -19,7 +19,9 @@ class DrizzleProvider extends Component {
   }
 
   getChildContext() {
-    const drizzleStore = this.props.store ? this.props.store : generateStore(this.props.options)
+    const drizzleStore = this.props.store
+      ? this.props.store
+      : generateStore(this.props.options)
     const drizzle = new Drizzle(this.props.options, drizzleStore)
 
     return { drizzle, drizzleStore }

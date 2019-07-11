@@ -29,10 +29,10 @@ export default drizzle => (
   }, args)
   return isFunction
     ? methodNameOrFunction((contractName, methodName, ...args) => {
-        const instance = drizzle.contracts[contractName]
-        const cacheKey = instance.methods[methodName].cacheCall(...args)
-        const cache = drizzleState[contractName][methodName][cacheKey]
-        return cache && cache.value
-      })
+      const instance = drizzle.contracts[contractName]
+      const cacheKey = instance.methods[methodName].cacheCall(...args)
+      const cache = drizzleState[contractName][methodName][cacheKey]
+      return cache && cache.value
+    })
     : drizzleState.value
 }

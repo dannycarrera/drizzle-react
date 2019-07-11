@@ -19,88 +19,86 @@ If you are using React v16.3 and up, you have access to the new [React Context](
 
 1. Setup Drizzle and then pass the `drizzle` instance into the context provider:
 
-    ```js
-    // 1. Import drizzle, drizzle-react, and your contract artifacts.
-    import { Drizzle, generateStore } from "drizzle";
-    import { DrizzleContext } from "drizzle-react";
-    import SimpleStorage from "./contracts/SimpleStorage.json";
+   ```js
+   // 1. Import drizzle, drizzle-react, and your contract artifacts.
+   import { Drizzle, generateStore } from "drizzle";
+   import { DrizzleContext } from "drizzle-react";
+   import SimpleStorage from "./contracts/SimpleStorage.json";
 
-    // 2. Setup the drizzle instance.
-    const options = { contracts: [SimpleStorage] };
-    const drizzleStore = generateStore(options);
-    const drizzle = new Drizzle(options, drizzleStore);
+   // 2. Setup the drizzle instance.
+   const options = { contracts: [SimpleStorage] };
+   const drizzleStore = generateStore(options);
+   const drizzle = new Drizzle(options, drizzleStore);
 
-    // ...
+   // ...
 
-    // 3. Pass the drizzle instance into the provider and wrap it
-    //    around your app.
-    <DrizzleContext.Provider drizzle={drizzle}>
-      <App />
-    </DrizzleContext.Provider>
-    ```
+   // 3. Pass the drizzle instance into the provider and wrap it
+   //    around your app.
+   <DrizzleContext.Provider drizzle={drizzle}>
+     <App />
+   </DrizzleContext.Provider>;
+   ```
 
 2. Then, in any child component of the app, we can access the `drizzle` instance as well as the `drizzleState`.
 
-    In our render tree, we use the `DrizzleContext.Consumer` component to get access to Drizzle. This component will call its function child with the following object:
+   In our render tree, we use the `DrizzleContext.Consumer` component to get access to Drizzle. This component will call its function child with the following object:
 
-    ```js
-    const drizzleContext = {
-      drizzle,       // this is the drizzle instance (use this to call `cacheCall` and `cacheSend`)
-      drizzleState,  // this is the entire Drizzle state, it will always be up-to-date
-      initialized    // this boolean value will indicate when Drizzle is ready
-    }
-    ```
+   ```js
+   const drizzleContext = {
+     drizzle, // this is the drizzle instance (use this to call `cacheCall` and `cacheSend`)
+     drizzleState, // this is the entire Drizzle state, it will always be up-to-date
+     initialized // this boolean value will indicate when Drizzle is ready
+   };
+   ```
 
-    Usage example:
+   Usage example:
 
-    ```js
-    import React from "react";
-    import { DrizzleContext } from "drizzle-react";
+   ```js
+   import React from "react";
+   import { DrizzleContext } from "drizzle-react";
 
-    export default () => (
-      <DrizzleContext.Consumer>
-        {drizzleContext => {
-          const { drizzle, drizzleState, initialized } = drizzleContext;
-      
-          if (!initialized) {
-            return "Loading...";
-          }
+   export default () => (
+     <DrizzleContext.Consumer>
+       {drizzleContext => {
+         const { drizzle, drizzleState, initialized } = drizzleContext;
 
-          return (
-            <MyDrizzleApp drizzle={drizzle} drizzleState={drizzleState} />
-          );
-        }}
-      </DrizzleContext.Consumer>
-    )
-    ```
+         if (!initialized) {
+           return "Loading...";
+         }
+
+         return <MyDrizzleApp drizzle={drizzle} drizzleState={drizzleState} />;
+       }}
+     </DrizzleContext.Consumer>
+   );
+   ```
 
 3. Inside your child component (`MyDrizzleApp` in the above example), use `drizzle` and `drizzleState` from props.
 
-    This example shows reading a value from the `storedData` public getter method and then rendering it inside a child component `<DisplayValue />` (code not shown).
+   This example shows reading a value from the `storedData` public getter method and then rendering it inside a child component `<DisplayValue />` (code not shown).
 
-    ```js
-    import React from "react";
-    import DisplayValue from "./DisplayValue";
+   ```js
+   import React from "react";
+   import DisplayValue from "./DisplayValue";
 
-    export default class MyDrizzleApp extends React.Component {
-      state = { dataKey: null };
+   export default class MyDrizzleApp extends React.Component {
+     state = { dataKey: null };
 
-      componentDidMount() {
-        const { drizzle } = this.props;
-        const contract = drizzle.contracts.SimpleStorage;
+     componentDidMount() {
+       const { drizzle } = this.props;
+       const contract = drizzle.contracts.SimpleStorage;
 
-        // get and save the key for the variable we are interested in
-        const dataKey = contract.methods["storedData"].cacheCall();
-        this.setState({ dataKey });
-      }
+       // get and save the key for the variable we are interested in
+       const dataKey = contract.methods["storedData"].cacheCall();
+       this.setState({ dataKey });
+     }
 
-      render() {
-        const { SimpleStorage } = this.props.drizzleState.contracts;
-        const storedData = SimpleStorage.storedData[this.state.dataKey];
-        return <DisplayValue value={storedData && storedData.value} />;
-      }
-    }
-    ```
+     render() {
+       const { SimpleStorage } = this.props.drizzleState.contracts;
+       const storedData = SimpleStorage.storedData[this.state.dataKey];
+       return <DisplayValue value={storedData && storedData.value} />;
+     }
+   }
+   ```
 
 #### Preventing Unnecessary Re-renders (Optional)
 
@@ -117,25 +115,25 @@ In the above example, the `<DisplayValue />` component should check to see if th
 We retain the old API for backwards compatibility, but please note that React itself has deprecated the legacy React Context API since v16.3 and it will not be supported in v17. When possible, please use the new React Context API.
 
 1. Import the provider.
+
    ```javascript
-   import { DrizzleProvider } from 'drizzle-react'
+   import { DrizzleProvider } from "drizzle-react";
    ```
 
 1. Create an `options` object and pass in the desired contract artifacts for Drizzle to instantiate. Other options are available, see [the Options section of the Drizzle docs](https://github.com/trufflesuite/drizzle#options) below.
+
    ```javascript
    // Import contracts
-   import SimpleStorage from './../build/contracts/SimpleStorage.json'
-   import TutorialToken from './../build/contracts/TutorialToken.json'
+   import SimpleStorage from "./../build/contracts/SimpleStorage.json";
+   import TutorialToken from "./../build/contracts/TutorialToken.json";
 
    const options = {
-     contracts: [
-       SimpleStorage,
-       TutorialToken
-     ]
-   }
+     contracts: [SimpleStorage, TutorialToken]
+   };
    ```
 
 1. Wrap your app with `DrizzleProvider` and pass in an `options` object. You can also pass in your existing `store`. [See our documentation for more information on using an existing Redux store](http://truffleframework.com/docs/drizzle/using-an-existing-redux-store).
+
    ```javascript
    <DrizzleProvider options={options}>
      <App />
@@ -143,23 +141,26 @@ We retain the old API for backwards compatibility, but please note that React it
    ```
 
 1. Wrap your components using the `drizzleConnect` function. It has the same API as the `connect()` function in `react-redux`. [See their docs here](https://github.com/reactjs/react-redux/blob/master/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options).
+
    ```javascript
-   import { drizzleConnect } from 'drizzle-react'
+   import { drizzleConnect } from "drizzle-react";
 
    const mapStateToProps = state => {
      return {
        drizzleStatus: state.drizzleStatus,
        SimpleStorage: state.contracts.SimpleStorage
-     }
-   }
+     };
+   };
 
    const HomeContainer = drizzleConnect(Home, mapStateToProps);
    ```
+
    See [Drizzle State in the Drizzle docs](https://github.com/trufflesuite/drizzle#drizzle-state) for the entire state tree.
 
 1. Get contract data by accessing the contracts via `context`. Calling the `data()` function on a contract will first check the store for a cached result. If empty, Drizzle will query the blockchain and cache the response for future use. For more information on how this works, see [How Data Stays Fresh in the Drizzle docs](https://github.com/trufflesuite/drizzle#how-data-stays-fresh).
 
    **Note:** We have to check that Drizzle is initialized before fetching data. A one-liner such as below is fine for display a few pieces of data, but a better approach for larger dapps is to use a [loading component](#recipe-loading-component).
+
    ```javascript
    // For convenience
    constructor(props, context) {
@@ -179,8 +180,9 @@ We retain the old API for backwards compatibility, but please note that React it
    ```
 
    The contract instance has all of its standard web3 properties and methods. For example, sending a transaction is done as normal:
+
    ```javascript
-   this.contracts.SimpleStorage.methods.set(this.state.storageAmount).send()
+   this.contracts.SimpleStorage.methods.set(this.state.storageAmount).send();
    ```
 
 ## Recipe: Loading Component
@@ -190,61 +192,63 @@ The following wrapper and component will detect when your dapp isn't ready and a
 `LoadingContainer.js`
 
 ```javascript
-import Loading from './Loading.js'
-import { drizzleConnect } from 'drizzle-react'
+import Loading from "./Loading.js";
+import { drizzleConnect } from "drizzle-react";
 
 // May still need this even with data function to refresh component on updates for this contract.
 const mapStateToProps = state => {
   return {
     drizzleStatus: state.drizzleStatus,
     web3: state.web3
-  }
-}
+  };
+};
 
 const LoadingContainer = drizzleConnect(Loading, mapStateToProps);
 
-export default LoadingContainer
+export default LoadingContainer;
 ```
 
 `Loading.js`
 
 ```javascript
-import React, { Component, Children } from 'react'
+import React, { Component, Children } from "react";
 
 class Loading extends Component {
   constructor(props, context) {
-    super(props)
+    super(props);
   }
 
   render() {
-    if (this.props.web3.status === 'failed')
-    {
-      return(
+    if (this.props.web3.status === "failed") {
+      return (
         // Display a web3 warning.
         <main>
           <h1>⚠️</h1>
-          <p>This browser has no connection to the Ethereum network. Please use the Chrome/FireFox extension MetaMask, or dedicated Ethereum browsers Mist or Parity.</p>
+          <p>
+            This browser has no connection to the Ethereum network. Please use
+            the Chrome/FireFox extension MetaMask, or dedicated Ethereum
+            browsers Mist or Parity.
+          </p>
         </main>
-      )
+      );
     }
 
-    if (this.props.drizzleStatus.initialized)
-    {
+    if (this.props.drizzleStatus.initialized) {
       // Load the dapp.
-      return Children.only(this.props.children)
+      return Children.only(this.props.children);
     }
 
-    return(
+    return (
       // Display a loading indicator.
       <main>
         <h1>⚙️</h1>
         <p>Loading dapp...</p>
       </main>
-    )
+    );
   }
 }
 
-export default Loading
+export default Loading;
 ```
 
 ## React Hooks Support (Experimental)
@@ -258,17 +262,17 @@ Hooks greatly simplify integration with `drizzle`, but are still a work in progr
 Just like with the other approaches, you'll need to wrap your app in a context provider with your `drizzle` instance.
 
 ```js
-import React from 'react'
-import { drizzleReactHooks } from 'drizzle-react'
-import setUpDrizzle from './set-up-drizzle'
-import App from './app'
+import React from "react";
+import { drizzleReactHooks } from "drizzle-react";
+import setUpDrizzle from "./set-up-drizzle";
+import App from "./app";
 
-const drizzle = setupDrizzle() // Instantiate drizzle instance as you normally would.
+const drizzle = setupDrizzle(); // Instantiate drizzle instance as you normally would.
 export default () => (
   <drizzleReactHooks.DrizzleProvider drizzle={drizzle}>
     <App />
   </drizzleReactHooks.DrizzleProvider>
-)
+);
 ```
 
 ### Reading State
@@ -276,16 +280,16 @@ export default () => (
 The first of the two main hooks exported is a `mapStateToProps` like function for reading from the `drizzle` store. We use this state selector approach, a la `redux`, to avoid rerendering all components when unrelated parts of the store change.
 
 ```js
-import React from 'react'
-import { drizzleReactHooks } from 'drizzle-react'
-import Accounts from './components/accounts'
+import React from "react";
+import { drizzleReactHooks } from "drizzle-react";
+import Accounts from "./components/accounts";
 
 export default () => {
   const drizzleState = drizzleReactHooks.useDrizzleState(drizzleState => ({
     accounts: drizzleState.accounts
-  }))
-  return <Accounts accounts={drizzleState.accounts} />
-}
+  }));
+  return <Accounts accounts={drizzleState.accounts} />;
+};
 ```
 
 You can also pass it an optional second parameter of any type that will be memoized and checked for shallow equality with the last call's on every call. If the shallow equality test fails, it will instantly call your `mapStateToProps` without waiting for an update from the `drizzle` store. This is useful when your `mapStateToProps` function depends on external variables and you want it to rerun immediately when they change to avoid race conditions in other parts of your code.
@@ -295,8 +299,8 @@ You can also pass it an optional second parameter of any type that will be memoi
 The second of the two main hooks exported is a function that returns your `drizzle` instance, a `cacheCall` function, and two other hooks, `useCacheEvents` and `useCacheSend`.
 
 ```js
-import React from 'react'
-import { drizzleReactHooks } from 'drizzle-react'
+import React from "react";
+import { drizzleReactHooks } from "drizzle-react";
 
 export default () => {
   const {
@@ -304,9 +308,9 @@ export default () => {
     drizzle,
     useCacheEvents,
     useCacheSend
-  } = drizzleReactHooks.useDrizzle()
+  } = drizzleReactHooks.useDrizzle();
   // return ...
-}
+};
 ```
 
 #### `useCacheCall`
@@ -324,21 +328,21 @@ This is the hooks version of `drizzle`'s `cacheCall`. It has two modes, a single
 ##### Single Call Example:
 
 ```js
-import React from 'react'
-import { drizzleReactHooks } from 'drizzle-react'
-import Balance from './components/balance'
+import React from "react";
+import { drizzleReactHooks } from "drizzle-react";
+import Balance from "./components/balance";
 
 export default () => {
-  const { useCacheCall } = drizzleReactHooks.useDrizzle()
+  const { useCacheCall } = drizzleReactHooks.useDrizzle();
   const drizzleState = drizzleReactHooks.useDrizzleState(drizzleState => ({
     account: drizzleState.accounts[0]
-  }))
+  }));
   return (
     <Balance
-      balance={useCacheCall('MyToken', 'balanceOf', drizzleState.account)}
+      balance={useCacheCall("MyToken", "balanceOf", drizzleState.account)}
     />
-  )
-}
+  );
+};
 ```
 
 ##### Multi Call Signature:
@@ -351,26 +355,26 @@ export default () => {
 ##### Multi Call Example:
 
 ```js
-import React from 'react'
-import { drizzleReactHooks } from 'drizzle-react'
-import Balance from './components/balance'
+import React from "react";
+import { drizzleReactHooks } from "drizzle-react";
+import Balance from "./components/balance";
 
 export default () => {
-  const { useCacheCall } = drizzleReactHooks.useDrizzle()
+  const { useCacheCall } = drizzleReactHooks.useDrizzle();
   const drizzleState = drizzleReactHooks.useDrizzleState(drizzleState => ({
     accounts: drizzleState.accounts
-  }))
+  }));
   return (
     <Balance
-      balance={useCacheCall(['MyToken'], call =>
+      balance={useCacheCall(["MyToken"], call =>
         drizzleState.accounts.reduce(
-          (sum, account) => sum + (call('MyToken', 'balanceOf', account) || 0),
+          (sum, account) => sum + (call("MyToken", "balanceOf", account) || 0),
           0
         )
       )}
     />
-  )
-}
+  );
+};
 ```
 
 #### `useCacheEvents`
@@ -388,20 +392,20 @@ This is a hook for arbitrary event queries in a `cacheCall` like manner for when
 ##### Example:
 
 ```js
-import React, { useMemo } from 'react'
-import { drizzleReactHooks } from 'drizzle-react'
-import Transfers from './components/transfers'
+import React, { useMemo } from "react";
+import { drizzleReactHooks } from "drizzle-react";
+import Transfers from "./components/transfers";
 
 export default () => {
-  const { useCacheEvents } = drizzleReactHooks.useDrizzle()
+  const { useCacheEvents } = drizzleReactHooks.useDrizzle();
   const drizzleState = drizzleReactHooks.useDrizzleState(drizzleState => ({
     account: drizzleState.accounts[0]
-  }))
+  }));
   return (
     <Transfers
       transfers={useCacheEvents(
-        'MyToken',
-        'Transfer',
+        "MyToken",
+        "Transfer",
         // Use memoization to only recreate listener when account changes.
         useMemo(
           () => ({
@@ -412,8 +416,8 @@ export default () => {
         )
       )}
     />
-  )
-}
+  );
+};
 ```
 
 #### `useCacheSend`
@@ -429,14 +433,14 @@ This is a hook for sending and listening to transactions.
 ##### Example:
 
 ```js
-import React, { useCallback } from 'react'
-import { drizzleReactHooks } from 'drizzle-react'
-import TransferForm from './components/transfer-form'
-import TransactionStatuses from './components/transaction-statuses'
+import React, { useCallback } from "react";
+import { drizzleReactHooks } from "drizzle-react";
+import TransferForm from "./components/transfer-form";
+import TransactionStatuses from "./components/transaction-statuses";
 
 export default () => {
-  const { useCacheSend } = drizzleReactHooks.useDrizzle()
-  const { send, transactions } = useCacheSend('MyToken', 'transfer')
+  const { useCacheSend } = drizzleReactHooks.useDrizzle();
+  const { send, transactions } = useCacheSend("MyToken", "transfer");
   return (
     <>
       <TransferForm
@@ -449,8 +453,8 @@ export default () => {
         transactionStatuses={transactions.map(t => t.status)}
       />
     </>
-  )
-}
+  );
+};
 ```
 
 ### Hooks Initializer Component
@@ -458,15 +462,15 @@ export default () => {
 We also export a general initializer component for wrapping your hooks enabled app.
 
 ```js
-import React from 'react'
-import { drizzleReactHooks } from 'drizzle-react'
-import setUpDrizzle from './set-up-drizzle'
-import Error from './components/error'
-import LoadingContractsAndAccounts from './components/loading-contracts-and-accounts'
-import LoadingWeb3 from './components/loading-web3'
-import App from './app'
+import React from "react";
+import { drizzleReactHooks } from "drizzle-react";
+import setUpDrizzle from "./set-up-drizzle";
+import Error from "./components/error";
+import LoadingContractsAndAccounts from "./components/loading-contracts-and-accounts";
+import LoadingWeb3 from "./components/loading-web3";
+import App from "./app";
 
-const drizzle = setupDrizzle() // Instantiate drizzle instance as you normally would.
+const drizzle = setupDrizzle(); // Instantiate drizzle instance as you normally would.
 export default () => (
   <drizzleReactHooks.DrizzleProvider drizzle={drizzle}>
     <drizzleReactHooks.Initializer
@@ -480,5 +484,5 @@ export default () => (
       <App />
     </drizzleReactHooks.Initializer>
   </drizzleReactHooks.DrizzleProvider>
-)
+);
 ```
