@@ -8,6 +8,7 @@ import React, {
 } from 'react'
 import PropTypes from 'prop-types'
 import createUseCacheCall from './create-use-cache-call'
+import createUseCacheCallMulti from './create-use-cache-call-multi'
 import createUseCacheEvents from './create-use-cache-events'
 import createUseCacheSend from './create-use-cache-send'
 import debounce from 'debounce'
@@ -66,6 +67,9 @@ export const useDrizzleState = (mapState, args) => {
 
 export const DrizzleProvider = ({ children, drizzle }) => {
   const useCacheCall = useMemo(() => createUseCacheCall(drizzle), [drizzle])
+  const useCacheCallMulti = useMemo(() => createUseCacheCallMulti(drizzle), [
+    drizzle
+  ])
   const useCacheSend = useMemo(() => createUseCacheSend(drizzle), [drizzle])
   const useCacheEvents = useMemo(() => createUseCacheEvents(drizzle), [drizzle])
   return (
@@ -74,10 +78,11 @@ export const DrizzleProvider = ({ children, drizzle }) => {
         () => ({
           drizzle,
           useCacheCall,
+          useCacheCallMulti,
           useCacheEvents,
           useCacheSend
         }),
-        [drizzle, useCacheCall, useCacheEvents, useCacheSend]
+        [drizzle, useCacheCall, useCacheCallMulti, useCacheEvents, useCacheSend]
       )}
     >
       {children}

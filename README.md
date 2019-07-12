@@ -313,11 +313,11 @@ export default () => {
 };
 ```
 
-#### `useCacheCall`
+#### `useCacheCall & useCacheCallMulti`
 
-This is the hooks version of `drizzle`'s `cacheCall`. It has two modes, a single call mode for simple 1 to 1 mappings to contract methods, and a multi call mode for calling multiple contract methods in loops and/or conditionals. Note that this multi call mode is required because hooks depend on execution index so they can't be called from dynamic loops or conditionals. [More info here](https://reactjs.org/docs/hooks-rules.html).
+These are the hooks version of `drizzle`'s `cacheCall`. There are two methods, a single call method for simple 1 to 1 mappings to contract methods, and a multi call mode for calling multiple contract methods in loops and/or conditionals. Note that this multi call mode is required because hooks depend on execution index so they can't be called from dynamic loops or conditionals. [More info here](https://reactjs.org/docs/hooks-rules.html).
 
-##### Single Call Signature:
+##### `useCacheCall`:
 
 - `contractName` - _The name of the contract in your `drizzle` config._
 - `methodName` - _The name of the method in the contract's ABI._
@@ -325,7 +325,7 @@ This is the hooks version of `drizzle`'s `cacheCall`. It has two modes, a single
 
   **Returns:** _The result of the `web3` call._
 
-##### Single Call Example:
+##### `useCacheCall` Example:
 
 ```js
 import React from "react";
@@ -345,14 +345,14 @@ export default () => {
 };
 ```
 
-##### Multi Call Signature:
+##### `useCacheCallMulti`:
 
 - `contractNames` - _An array of names of contracts in your `drizzle` config. The hook will update whenever one of these contracts synchronizes._
 - `func` - _A function that the hook will call with the single call function as its only argument on every update._
 
   **Returns:** _The result of `func`._
 
-##### Multi Call Example:
+##### `useCacheCallMulti` Example:
 
 ```js
 import React from "react";
@@ -360,15 +360,17 @@ import { drizzleReactHooks } from "drizzle-react";
 import Balance from "./components/balance";
 
 export default () => {
-  const { useCacheCall } = drizzleReactHooks.useDrizzle();
-  const drizzleState = drizzleReactHooks.useDrizzleState(drizzleState => ({
-    accounts: drizzleState.accounts
-  }));
+  const { useCacheCallMulti } = drizzleReactHooks.useDrizzle();
+  const accounts = [
+    "0xd7751aeF38Cf010E879029d943dEFE9E3Fd2cAC5",
+    "0x7a75C1AEa2C460d165daF25af5727b44bcBFE27C"
+  ];
   return (
     <Balance
-      balance={useCacheCall(["MyToken"], call =>
-        drizzleState.accounts.reduce(
-          (sum, account) => sum + (call("MyToken", "balanceOf", account) || 0),
+      balance={useCacheCallMulti(["MyToken"], call =>
+        accounts.reduce(
+          (sum, account) =>
+            sum + parseInt(call("MyToken", "balanceOf", account) || 0, 10),
           0
         )
       )}
